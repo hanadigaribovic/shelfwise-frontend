@@ -1,0 +1,41 @@
+<div class="register-container">
+  <div class="form-side">
+    <h1>Welcome Back</h1>
+    <p>Log in to continue your reading journey.</p>
+    <br>
+    <p>Access your bookshelf, manage your wishlist, and track your orders – all in one place.</p>
+    <br>
+    <p>Your next favorite book is just a click away.</p>
+    <div class="spacer"></div>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <label>Login</label>
+      <input type="email" formControlName="login" placeholder="john@doe.com" />
+      <div *ngIf="form.get('login')?.invalid && form.get('login')?.touched" class="error-message">
+        Please enter a valid email.
+      </div>
+
+      <label>Password</label>
+      <div class="input-group">
+        <input [type]="passwordInputType" formControlName="password" placeholder="********" />
+        <button type="button" class="toggle-btn" (click)="showPassword = !showPassword">
+          {{ showPassword ? 'Hide' : 'Show' }}
+        </button>
+      </div>
+      <div *ngIf="wrongPassword" class="error-message fade-message">
+        Incorrect login or password.
+      </div>
+
+
+      <button type="submit" [disabled]="form.invalid">Login</button>
+    </form>
+
+    <p class="register-redirect">
+      Don’t have an account? <a (click)="goToRegister()">Register!</a>
+    </p>
+  </div>
+
+  <div class="image-side">
+    <img src="/login-page-photo.png" alt="Login Image" />
+  </div>
+</div>

@@ -1,0 +1,113 @@
+<app-header-home></app-header-home>
+
+<!--Landing Section-->
+<section class="initial-landing">
+  <img src="/ilp-book.png" alt="Book Illustration" class="background-book" />
+
+  <div class="landing-content">
+    <h1>Discover Your Next<br />Favourite Book</h1>
+    <p>Dive into thousand of books handpicked<br />for readers like you.</p>
+    <button class="start-btn">Start Now</button>
+  </div>
+</section>
+
+<section class="our-books-section">
+  <h2>Our Books</h2>
+
+  <div class="books-wrapper">
+    <div class="fake-search" (click)="goToLogin()">
+      Search all books...
+    </div>
+
+    <div class="book-flex">
+      <div class="book-card" *ngFor="let book of books">
+        <img [src]="book.image" [alt]="book.title" />
+      </div>
+    </div>
+  </div>
+</section>
+
+<!--About Section-->
+<section class="about-section">
+  <div class="about-wrapper">
+    <div class="about-heading">
+      <h2>About ShelfWise</h2>
+      <p>Bringing Stories to Your Shelf</p>
+    </div>
+
+    <!-- Block 1 -->
+    <div class="about-row">
+      <div class="about-text">
+        <img src="/about-icon1.png" alt="Icon" class="about-icon" />
+        <h3>At ShelfWise</h3>
+        <p>
+          we believe books are more than just paper – they’re portals to new
+          worlds, fresh ideas, and timeless stories. <br />
+          Our mission is to make discovering your next favorite read effortless
+          and enjoyable.
+        </p>
+      </div>
+      <div class="about-image">
+        <img src="/about-photo1.png" alt="Books" />
+      </div>
+    </div>
+
+    <!-- Block 2 -->
+    <div class="about-row reverse">
+      <div class="about-image">
+        <img src="/about-photo2.png" alt="Reader" />
+      </div>
+      <div class="about-text">
+        <img src="/about-icon2.png" alt="Icon" class="about-icon" />
+        <h3>Reader</h3>
+        <p>
+          Whether you’re a casual reader or a dedicated book lover, ShelfWise
+          helps you explore a thoughtfully curated collection tailored to your
+          taste.
+        </p>
+      </div>
+    </div>
+
+    <!-- Block 3 -->
+    <div class="about-row">
+      <div class="about-text">
+        <img src="/about-icon3.png" alt="Icon" class="about-icon" />
+        <h3>Every part of the platform,</h3>
+        <p>
+          designed with simplicity in mind – from searching and filtering to
+          wishlisting and ordering. <br />
+          With a user-first approach and a passion for literature, ShelfWise is
+          your digital bookstore built for comfort, discovery, and inspiration.
+        </p>
+      </div>
+      <div class="about-image">
+        <img src="/about-photo3.png" alt="E-reader" />
+      </div>
+    </div>
+  </div>
+</section>
+
+<!--CTA Section-->
+<section class="cta-section">
+  <div class="cta-image">
+    <img src="/cta-photo.png" alt="Bookshelves" />
+  </div>
+
+  <div class="cta-content">
+    <h2>
+      Ready to Begin Your<br />
+      <strong>Journey?</strong>
+    </h2>
+    <p>
+      Whether you're searching for timeless classics or the latest bestsellers, ShelfWise is your
+      trusted companion. Explore our vast collection, save your favorites, and manage your reading list
+      all in one place. No stress — just stories waiting to be discovered.
+    </p>
+    <p>
+      Start exploring today and find books that truly speak to you.
+    </p>
+    <button class="start-btn" (click)="goToLogin()">Start Now</button>
+  </div>
+</section>
+
+<app-footer></app-footer>

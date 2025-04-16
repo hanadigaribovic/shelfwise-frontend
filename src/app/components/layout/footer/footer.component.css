@@ -1,0 +1,83 @@
+.footer {
+  background-color: white;
+  border-top: 1px solid #e0e0e0;
+  padding: 3rem 2rem 0;
+  font-family: 'Segoe UI', sans-serif;
+  color: #333;
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 2rem;
+  border: red;
+}
+
+.footer-section {
+  flex: 1 1 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.logo-section .logo {
+  height: 40px;
+  width: auto;
+  object-fit: contain;
+  margin-bottom: 1rem;
+  align-self: start;
+}
+
+.social-icons {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.social-icons img {
+  height: 24px;
+  cursor: pointer;
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.contact-item img {
+  height: 20px;
+}
+
+.footer-section{
+  justify-content: space-between;
+}
+
+.footer-section a {
+  color: inherit;
+  text-decoration: none;
+  margin-bottom: 0.3rem;
+  font-weight: 500;
+}
+
+.start-btn {
+  background-color: #494b2f;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.5rem;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 5px;
+  width: fit-content;
+}
+
+/* 👇 Copyright sada odvojen i centriran */
+.footer-bottom {
+  text-align: center;
+  font-size: 0.85rem;
+  color: #666;
+  margin: 2rem 0 0.5rem 0;
+  padding-top: 1rem;
+  border-top: 1px solid #e0e0e0;
+}

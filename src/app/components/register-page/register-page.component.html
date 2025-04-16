@@ -1,0 +1,44 @@
+<div class="register-container">
+  <div class="image-side">
+    <img src="/register-page-photo.png" alt="Register Image" />
+  </div>
+
+  <div class="form-side">
+    <h1>Create Your <strong>ShelfWise</strong> Account</h1>
+    <p>Join our community of passionate readers and start exploring thousands of books tailored to your interests.</p>
+    <br>
+    <p>With your free ShelfWise account, you can build your wishlist, manage your bookshelf, and track your orders with ease.</p>
+    <div class="spacer"></div>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <label>Email</label>
+      <input type="email" formControlName="email" placeholder="john@doe.com" />
+
+      <label>Password</label>
+      <div class="input-group">
+        <input [type]="passwordInputType" formControlName="password" placeholder="*******"/>
+        <button type="button" class="toggle-btn" (click)="showPassword = !showPassword">
+          {{ showPassword ? 'Hide' : 'Show' }}
+        </button>
+      </div>
+
+      <label>Confirm Password</label>
+      <div class="input-group">
+        <input [type]="confirmPasswordInputType" formControlName="confirmPassword" placeholder="********"/>
+        <button type="button" class="toggle-btn" (click)="showConfirmPassword = !showConfirmPassword">
+          {{ showConfirmPassword ? 'Hide' : 'Show' }}
+        </button>
+      </div>
+
+      <div class="no-match" *ngIf="form.errors?.['passwordsMismatch'] && form.get('confirmPassword')?.touched">
+           Passwords do not match.
+      </div>
+
+      <button type="submit" [disabled]="form.invalid">Register</button>
+    </form>
+
+    <p class="login-redirect">
+      Already registered? <a (click)="goToLogin()">Login!</a>
+    </p>
+  </div>
+</div>
