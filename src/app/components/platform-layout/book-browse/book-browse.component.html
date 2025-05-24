@@ -1,0 +1,11 @@
+<div class="search-filter">
+  <input type="text" [(ngModel)]="search" (ngModelChange)="onSearchChange($event)" placeholder="Search all books..." />
+
+  <select [(ngModel)]="sort" (change)="onSortChange(sort)">
+    <option value="title-asc">Title ↑</option>
+    <option value="title-desc">Title ↓</option>
+    <option value="price-asc">Price ↑</option>
+    <option value="price-desc">Price ↓</option>
+  </select>
+
+</div>

@@ -1,0 +1,38 @@
+<div class="back-link" (click)="goBack()">
+  <span>← Back to books cart</span>
+</div>
+
+<h2>Ready to order? Let’s go!</h2>
+
+<form #orderForm="ngForm" (ngSubmit)="submitOrder()" novalidate>
+  <label>
+    First Name
+    <input type="text" [(ngModel)]="firstName" name="firstName" required #firstNameInput="ngModel" />
+    <small class="error" *ngIf="firstNameInput.invalid && firstNameInput.touched">
+      First name is required.
+    </small>
+  </label>
+
+  <label>
+    Phone Number
+    <input type="tel" [(ngModel)]="phoneNumber" name="phoneNumber" required pattern="^[0-9+\-()\s]*$"
+      #phoneInput="ngModel" />
+    <small class="error" *ngIf="phoneInput.invalid && phoneInput.touched">
+      A valid phone number is required.
+    </small>
+  </label>
+
+  <label>
+    Address
+    <input type="text" [(ngModel)]="address" name="address" required #addressInput="ngModel" />
+    <small class="error" *ngIf="addressInput.invalid && addressInput.touched">
+      Address is required.
+    </small>
+  </label>
+
+  <div class="submit-container">
+    <button type="submit" class="order-btn" [disabled]="orderForm.invalid">
+      Order Now for ${{ total }}
+    </button>
+  </div>
+</form>

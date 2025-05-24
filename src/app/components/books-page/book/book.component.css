@@ -1,0 +1,109 @@
+.book-card-horizontal {
+  display: flex;
+  gap: 2rem;
+  border: 1px solid #ccc;
+  padding: 1.5rem;
+  border-radius: 4px;
+  background-color: #fdfbf7;
+  font-family: "Inter", sans-serif;
+  align-items: center;
+}
+
+.book-image img {
+  width: 160px;
+  height: auto;
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+.book-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #2e2e2e;
+}
+
+.author {
+  font-size: 1rem;
+  color: #666;
+  margin-bottom: 0.5rem;
+}
+
+.rating {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: #4a4a2c;
+}
+
+.rating .star {
+  font-size: 20px;
+}
+
+.rating-score {
+  margin-left: 0.5rem;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.description {
+  font-size: 0.95rem;
+  color: #555;
+  margin: 0.5rem 0 1rem;
+}
+
+.book-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.price {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: #2e2e2e;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.icon {
+  font-size: 20px;
+  color: #4a4a2c;
+  cursor: pointer;
+}
+
+button {
+  background-color: white;
+  border: 1px solid #4a4a2c;
+  padding: 0.4rem 1rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  color: #4a4a2c;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+button:hover {
+  background-color: #f0f0f0;
+}
+
+.icon {
+  cursor: pointer;
+  font-size: 24px;
+  transition: color 0.3s ease;
+}
+
+.icon.active {
+  color: #e53935;
+}

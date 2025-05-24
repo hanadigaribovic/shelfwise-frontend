@@ -1,1 +1,16 @@
-<p>my-orders-page works!</p>
+<h2>Your Orders</h2>
+
+<div class="orders-list">
+  <div *ngFor="let order of orders" class="order-card" (click)="goToOrder(order.id)">
+    <div class="order-header">
+      <span class="order-id">Order #{{ order.id }}</span>
+      <span class="status-chip" [ngClass]="order.status.toLowerCase()">{{ order.status }}</span>
+    </div>
+
+    <div class="order-details">
+      <span>{{ order.items.length }} item{{ order.items.length > 1 ? 's' : '' }}</span>
+      <span class="total">Total: ${{ order.total }}</span>
+      <span class="eta">Est. delivery: {{ order.eta }}</span>
+    </div>
+  </div>
+</div>

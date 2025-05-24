@@ -1,0 +1,11 @@
+<div class="topbar">
+  <a [routerLink]="['/wishlist']" class="icon-wrapper">
+    <mat-icon>favorite</mat-icon>
+    <span class="badge" *ngIf="wishlistCount$ | async as wc">{{ wc }}</span>
+  </a>
+
+  <a [routerLink]="['/cart']" class="icon-wrapper">
+    <mat-icon>shopping_cart</mat-icon>
+    <span class="badge" *ngIf="cartCount$ | async as cc">{{ cc }}</span>
+  </a>
+</div>
