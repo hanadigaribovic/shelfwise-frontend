@@ -1,0 +1,33 @@
+<h2>Your cart</h2>
+
+<ng-container *ngIf="(cartItems$ | async) as cartItems">
+  <div *ngIf="cartItems.length === 0" class="empty-cart">
+    <mat-icon>shopping_cart</mat-icon>
+    <p>Your cart is currently empty.</p>
+  </div>
+
+  <div *ngFor="let item of cartItems" class="cart-row">
+    <div>
+      {{ item.quantity }}x {{ item.title }} {{ item.author }}
+    </div>
+
+    <div class="right">
+      <div>${{ (item.price * item.quantity).toFixed(2) }}</div>
+
+      <div class="quantity">
+        <button (click)="decrease(item.id)">-</button>
+        <span>{{ item.quantity }}</span>
+        <button (click)="increase(item.id)">+</button>
+      </div>
+
+      <button class="delete-btn" (click)="remove(item.id)">Delete</button>
+    </div>
+  </div>
+
+  <div class="cart-footer" *ngIf="cartItems.length > 0">
+    <button class="clear-btn" (click)="clear()">
+      <mat-icon>delete</mat-icon>
+    </button>
+    <button class="order-btn" (click)="order()">Order</button>
+  </div>
+</ng-container>

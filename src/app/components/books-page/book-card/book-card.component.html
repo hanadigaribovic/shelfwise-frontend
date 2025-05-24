@@ -1,0 +1,23 @@
+<div class="book-card">
+  <a [routerLink]="[`/books/${id}`]" routerLinkActive="router-link-active" [ngStyle]="{'text-decoration': 'none'}">
+    <div class="image-container">
+      <img [src]="imageUrl" [alt]="title" />
+    </div>
+
+    <div class="book-details">
+      <h3 class="book-title">{{ title }}</h3>
+      <p class="book-author">{{ author }}</p>
+
+      <div class="book-meta">
+        <span class="price">{{ price }}$</span>
+      </div>
+    </div>
+  </a>
+  <div class="actions absolute">
+    <mat-icon class="icon" (click)="toggleWishlist(); $event.preventDefault();"
+      [ngClass]="{ active: isInWishlist() }">{{ isInWishlist() ? 'favorite' : 'favorite_border' }}</mat-icon>
+    <button (click)="addToCart(); $event.preventDefault();">
+      {{ isInCart() ? 'In Cart' : 'Add to Cart' }}
+    </button>
+  </div>
+</div>

@@ -1,0 +1,25 @@
+<div class="back" (click)="back()">← Back to books order</div>
+
+<h2>Order #{{ orderId }} status</h2>
+
+<div class="status-bar">
+  <span class="status-chip">{{ order?.status }}</span>
+</div>
+
+<div class="delivery-note">
+  Only {{ order?.daysLeft }} days left
+  <span class="est">(Estimated delivery: {{ order?.eta }})</span>
+</div>
+
+<div *ngFor="let item of order?.items" class="order-item">
+  <div>{{ item.quantity }}x {{ item.title }}</div>
+  <div>${{ item.price.toFixed(2) }}</div>
+</div>
+
+<div class="total-price">
+  <strong>Price to Pay:</strong> ${{ order?.total }}
+</div>
+
+<div class="pay-footer" *ngIf="fromCart && order?.status !== 'COMPLETED'">
+  <button (click)="pay()">Order Now</button>
+</div>

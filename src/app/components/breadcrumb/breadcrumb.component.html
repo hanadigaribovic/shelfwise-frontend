@@ -1,0 +1,12 @@
+<div class="breadcrumb" *ngIf="segments.length > 0">
+  <span class="back-arrow" (click)="goBack()">
+    <mat-icon>keyboard_return</mat-icon>
+  </span>
+
+  <ng-container *ngFor="let segment of displaySegments; let last = last">
+    <span [class.clickable]="!last" (click)="!last && router.navigate([segment.path])">
+      {{ segment.label }}
+    </span>
+    <span *ngIf="!last">→</span>
+  </ng-container>
+</div>

@@ -1,1 +1,28 @@
-<p>wishlist-page works!</p>
+<h2>Your Wishlist</h2>
+
+<ng-container *ngIf="(wishlist$ | async) as wishlist">
+  <div *ngIf="wishlist.length === 0" class="empty-cart">
+    <mat-icon>favorite_border</mat-icon>
+    <p>Your wishlist is currently empty.</p>
+  </div>
+
+  <div *ngFor="let item of wishlist" class="wishlist-row">
+    <div>{{ item.title }}</div>
+    <div class="right">
+      <span>${{ item.price.toFixed(2) }}</span>
+
+      <button class="cart-btn" [disabled]="isInCart(item.id)" (click)="addToCart(item)">
+        {{ isInCart(item.id) ? 'In Cart' : 'Add to Cart' }}
+      </button>
+
+      <button class="delete-btn" (click)="remove(item.id)">Delete</button>
+    </div>
+  </div>
+
+  <div class="wishlist-footer" *ngIf="wishlist.length > 0">
+    <button class="clear-btn" (click)="clear()">
+      <mat-icon>delete</mat-icon>
+    </button>
+    <button class="go-to-cart" (click)="goToCart()">Go to Cart</button>
+  </div>
+</ng-container>

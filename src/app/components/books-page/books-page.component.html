@@ -1,0 +1,6 @@
+<div class="book-grid">
+  <ng-container *ngIf="books$ | async as books">
+    <app-book-card *ngFor="let book of books" [id]="book.id.toString()" [title]="book.title" [author]="book.author"
+      [price]="book.price" [imageUrl]="book.imageUrl"></app-book-card>
+  </ng-container>
+</div>

@@ -1,0 +1,47 @@
+<div class="sidebar">
+  <img src="/logo.png" alt="ShelfWise Logo" class="logo" (click)="router.navigate(['/books'])" />
+
+  <div class="links">
+    <a [routerLink]="['/books']" routerLinkActive="router-link-active">
+      Books
+    </a>
+    <a [routerLink]="['/my-orders']" routerLinkActive="router-link-active">
+      My Orders
+    </a>
+  </div>
+
+  <div class="filter-panel">
+    <h3>Filters</h3>
+
+    <label>
+      Min Price:
+      <input type="number" [(ngModel)]="minPrice" />
+    </label>
+
+    <label>
+      Max Price:
+      <input type="number" [(ngModel)]="maxPrice" />
+    </label>
+
+    <label>
+      Min Rating:
+      <input type="number" min="0" max="5" step="0.1" [(ngModel)]="minRating" />
+    </label>
+
+    <label>
+      Category:
+      <select [(ngModel)]="selectedCategory">
+        <option value="">All</option>
+        <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+      </select>
+    </label>
+
+    <!-- <label class="checkbox-label">
+      <input type="checkbox" [(ngModel)]="availableOnly" />
+      Available only
+    </label> -->
+
+    <button (click)="applyFilters()">Apply</button>
+    <button (click)="clearFilters()">Reset</button>
+  </div>
+</div>
