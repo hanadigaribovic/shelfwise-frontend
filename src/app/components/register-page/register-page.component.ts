@@ -1,22 +1,31 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-register-page',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterModule],
   templateUrl: './register-page.component.html',
-  styleUrls: ['./register-page.component.css']
+  styleUrls: ['./register-page.component.css'],
 })
 export class RegisterPageComponent {
   form: FormGroup;
   showPassword = false;
   showConfirmPassword = false;
 
-
-  constructor(private fb: FormBuilder, private router: Router) {
+  constructor(
+    private fb: FormBuilder,
+    private router: Router,
+    private authService: AuthService
+  ) {
     this.form = this.fb.group(
       {
         email: ['', [Validators.required, Validators.email]],
@@ -37,8 +46,12 @@ export class RegisterPageComponent {
 
   onSubmit() {
     if (this.form.valid) {
-      console.log(this.form.value);
-      // TODO: implement registration logic
+      const { email, password } = this.form.value;
+
+      this.authService.register({ email, password }).subscribe({
+        next: () => this.router.navigate(['/books']),
+        error: (err) => console.error('Registration error:', err),
+      });
     }
   }
 

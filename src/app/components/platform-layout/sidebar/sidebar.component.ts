@@ -77,4 +77,9 @@ export class SidebarComponent implements OnInit {
 
     this.applyFilters(false);
   }
+
+  logout() {
+    localStorage.removeItem('token');
+    this.router.navigate(['/home']);
+  }
 }
