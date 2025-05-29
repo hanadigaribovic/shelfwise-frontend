@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, combineLatest, map, Observable, of } from 'rxjs';
-// import { HttpClient } from '@angular/common/http'; // ✅ Uncomment when switching to backend
+import { BehaviorSubject, combineLatest, map, Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environments';
 
 export interface Book {
   id: string;
@@ -30,54 +31,27 @@ export class BookService {
   private filterOptionsSubject = new BehaviorSubject<FilterOptions>({});
   private initialized = false;
 
-  // constructor(private http: HttpClient) {} // ✅ Use this when enabling backend
-  constructor() {} // 👈 Mock only
+  constructor(private http: HttpClient) {}
 
   private loadBooks(): void {
     if (this.initialized) return;
 
-    const mockData: Book[] = [
-      {
-        id: '1',
-        title: 'Atomic Habits',
-        author: 'James Clear',
-        price: 80,
-        imageUrl: '/our-books-1.png',
-        rating: 4.5,
-        description:
-          'Bestselling guide to building good habits and breaking bad ones.',
+    this.http.get<Book[]>(`${environment.apiUrl}/books`).subscribe({
+      next: (books) => {
+        this.booksSubject.next(books);
+        this.initialized = true;
       },
-      {
-        id: '2',
-        title: 'Deep Work',
-        author: 'Cal Newport',
-        price: 72,
-        imageUrl: '/our-books-1.png',
-        rating: 4.4,
-        description: 'Rules for focused success in a distracted world.',
+      error: (err) => {
+        console.error('Failed to load books from backend:', err);
+        this.booksSubject.next([]);
+        this.initialized = true;
       },
-      {
-        id: '3',
-        title: 'The Alchemist',
-        author: 'Paulo Coelho',
-        price: 65,
-        imageUrl: '/our-books-1.png',
-        rating: 4.2,
-        description:
-          'A journey of self-discovery through mystical storytelling.',
-      },
-    ];
-
-    this.booksSubject.next(mockData);
-    this.initialized = true;
+    });
   }
 
   getBooks(): Observable<Book[]> {
     this.loadBooks();
     return this.booksSubject.asObservable();
-
-    // ✅ Use this version when backend is ready
-    // return this.http.get<Book[]>('/api/books');
   }
 
   getFilteredBooks(): Observable<Book[]> {
@@ -114,7 +88,6 @@ export class BookService {
               .includes(filters.category!.toLowerCase())
           );
         }
-
         if (filters.availableOnly) {
           result = result.filter((b) => b.price < 100);
         }
@@ -144,9 +117,6 @@ export class BookService {
     return this.booksSubject.pipe(
       map((books) => books.find((book) => book.id === id))
     );
-
-    // ✅ Use this version when backend is ready
-    // return this.http.get<Book>(`/api/books/${id}`);
   }
 
   setSearchTerm(term: string) {
