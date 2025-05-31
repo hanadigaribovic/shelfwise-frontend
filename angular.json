@@ -23,9 +23,9 @@
             "assets": [
               {
                 "glob": "**/*",
-                "input": "public"¸,
+                "input": "public"
+              },
                 "src/_redirects"
-              }
             ],
             "styles": [
               "src/custom-theme.scss",
