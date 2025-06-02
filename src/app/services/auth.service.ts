@@ -12,7 +12,7 @@ interface AuthResponse {
   providedIn: 'root',
 })
 export class AuthService {
-  private API_URL = `${environment.apiUrl}/api/auth`;
+  private API_URL = `${environment.apiUrl}/auth`;
 
   constructor(private http: HttpClient) {}
 
