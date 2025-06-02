@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 interface AuthResponse {
   token: string;
@@ -8,23 +9,26 @@ interface AuthResponse {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
-  private API_URL = 'http://localhost:8080/api/auth';
+  private API_URL = `${environment.apiUrl}/api/auth`;
 
   constructor(private http: HttpClient) {}
 
-  register(data: { email: string; password: string }): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.API_URL}/register`, data).pipe(
-      tap(res => this.saveToken(res.token))
-    );
+  register(data: {
+    email: string;
+    password: string;
+  }): Observable<AuthResponse> {
+    return this.http
+      .post<AuthResponse>(`${this.API_URL}/register`, data)
+      .pipe(tap((res) => this.saveToken(res.token)));
   }
 
   login(data: { email: string; password: string }): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.API_URL}/login`, data).pipe(
-      tap(res => this.saveToken(res.token))
-    );
+    return this.http
+      .post<AuthResponse>(`${this.API_URL}/login`, data)
+      .pipe(tap((res) => this.saveToken(res.token)));
   }
 
   private saveToken(token: string): void {

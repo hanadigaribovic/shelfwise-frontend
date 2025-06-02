@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, combineLatest, map, Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../../environments/environments';
+import { environment } from '../../environments/environment';
 
 export interface Book {
   id: string;
