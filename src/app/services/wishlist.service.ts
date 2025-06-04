@@ -1,76 +1,74 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of } from 'rxjs';
-// import { HttpClient } from '@angular/common/http'; // ✅ Uncomment when backend is used
+import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { environment } from '../../environments/environment';
 
-export interface WishlistItem {
-  id: string;
+export interface WishlistDto {
+  id: string; // wishlist item ID
+  userId: string;
+  bookId: string;
   title: string;
   author: string;
   price: number;
 }
 
+export interface AddToWishlistDto {
+  userId: string;
+  bookId: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class WishlistService {
-  private wishlistSubject = new BehaviorSubject<WishlistItem[]>([
-    {
-      id: '1',
-      title: 'Story about John Doe',
-      author: 'John Doe',
-      price: 12.0,
-    },
-    {
-      id: '2',
-      title: 'Story about John Doe',
-      author: 'John Doe',
-      price: 12.0,
-    },
-    {
-      id: '3',
-      title: 'Story about John Doe',
-      author: 'John Doe',
-      price: 12.0,
-    },
-  ]);
+  private wishlistSubject = new BehaviorSubject<WishlistDto[]>([]);
+  wishlist$ = this.wishlistSubject.asObservable();
 
-  // constructor(private http: HttpClient) {} // ✅ Use when switching to real backend
-  constructor() {} // 👈 mock version
+  constructor(private http: HttpClient) {}
 
-  getWishlist(): Observable<WishlistItem[]> {
-    return this.wishlistSubject.asObservable();
-
-    // ✅ Future backend call
-    // return this.http.get<WishlistItem[]>('/api/wishlist');
+  getWishlist(userId: string): Observable<WishlistDto[]> {
+    return this.http
+      .get<WishlistDto[]>(`${environment.apiUrl}/wishlist/${userId}`)
+      .pipe(tap((items) => this.wishlistSubject.next(items)));
   }
 
-  addItem(item: WishlistItem) {
-    const exists = this.wishlistSubject.value.some((i) => i.id === item.id);
-    if (!exists) {
-      this.wishlistSubject.next([...this.wishlistSubject.value, item]);
-    }
-
-    // ✅ Future backend call
-    // return this.http.post<void>('/api/wishlist', item);
+  addItem(dto: AddToWishlistDto): Observable<WishlistDto> {
+    return this.http
+      .post<WishlistDto>(`${environment.apiUrl}/wishlist`, dto)
+      .pipe(
+        tap((newItem) => {
+          const updated = [...this.wishlistSubject.value, newItem];
+          this.wishlistSubject.next(updated);
+        })
+      );
   }
 
-  removeItem(id: string) {
-    const items = this.wishlistSubject.value.filter((i) => i.id !== id);
-    this.wishlistSubject.next(items);
-
-    // ✅ Future backend call
-    // return this.http.delete<void>(`/api/wishlist/${id}`);
+  removeItem(wishlistId: string): Observable<void> {
+    return this.http
+      .delete<void>(`${environment.apiUrl}/wishlist/${wishlistId}`)
+      .pipe(
+        tap(() => {
+          const filtered = this.wishlistSubject.value.filter(
+            (item) => item.id !== wishlistId
+          );
+          this.wishlistSubject.next(filtered);
+        })
+      );
   }
 
-  clear() {
-    this.wishlistSubject.next([]);
-
-    // ✅ Future backend call
-    // return this.http.delete<void>('/api/wishlist');
+  clear(userId: string): Observable<void> {
+    return this.http
+      .delete<void>(`${environment.apiUrl}/wishlist/clear/${userId}`)
+      .pipe(tap(() => this.wishlistSubject.next([])));
   }
 
-  hasItem(id: string): boolean {
-    return this.wishlistSubject.value.some((item) => item.id === id);
+  hasItem(bookId: string): boolean {
+    return this.wishlistSubject.value.some((item) => item.bookId === bookId);
+  }
 
-    // ✅ Optional: implement backend verification if needed
-    // return this.getWishlist().pipe(map(items => items.some(i => i.id === id)));
+  getWishlistSnapshot(): WishlistDto[] {
+    return this.wishlistSubject.value;
+  }
+
+  isInWishlist(bookId: string): boolean {
+    return this.wishlistSubject.value.some((item) => item.bookId === bookId);
   }
 }

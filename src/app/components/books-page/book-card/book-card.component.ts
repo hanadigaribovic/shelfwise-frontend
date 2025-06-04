@@ -2,81 +2,90 @@ import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterModule } from '@angular/router';
-import { CartService } from '../../../services/cart.service';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { WishlistService } from '../../../services/wishlist.service';
+import { CartService } from '../../../services/cart.service';
 
 @Component({
   selector: 'app-book-card',
-  imports: [MatIconModule, RouterModule, CommonModule],
+  standalone: true,
+  imports: [MatIconModule, RouterModule, CommonModule, MatSnackBarModule],
   templateUrl: './book-card.component.html',
   styleUrl: './book-card.component.css',
-  standalone: true,
 })
 export class BookCardComponent {
   @Input() id!: string;
   @Input() title!: string;
   @Input() author!: string;
   @Input() price!: number;
-  @Input() imageUrl!: string;
+  @Input() imageUrl: string = 'assets/images/our-books-4.png';
 
   constructor(
     private cartService: CartService,
-    private wishlistService: WishlistService
+    private wishlistService: WishlistService,
+    private snackBar: MatSnackBar
   ) {}
 
   addToCart() {
-    // ✅ MOCK logic
-    if (!this.cartService.hasItem(this.id)) {
-      this.cartService.addItem({
-        id: this.id,
-        title: this.title,
-        author: this.author,
-        price: this.price,
-        quantity: 1,
-      });
-    } else {
-      this.cartService.removeItem(this.id);
-    }
+    const userId = localStorage.getItem('userId')!;
+    const isInCart = this.cartService
+      .getCartItemsSnapshot()
+      .some((item) => item.bookId === this.id);
 
-    // ✅ HTTP-ready (future)
-    /*
-    if (!this.isInCart()) {
-      this.cartService.addItem({ ... }).subscribe();
+    if (!isInCart) {
+      this.cartService
+        .addItem({
+          userId,
+          bookId: this.id,
+          quantity: 1,
+        })
+        .subscribe(() => {
+          this.snackBar.open('Added to cart', 'Close', { duration: 2000 });
+        });
     } else {
-      this.cartService.removeItem(this.id).subscribe();
+      const cartItem = this.cartService
+        .getCartItemsSnapshot()
+        .find((item) => item.bookId === this.id);
+
+      if (cartItem) {
+        this.cartService.removeItem(cartItem.id).subscribe(() => {
+          this.snackBar.open('Removed from cart', 'Close', { duration: 2000 });
+        });
+      }
     }
-    */
   }
 
   toggleWishlist() {
-    if (this.isInWishlist()) {
-      this.wishlistService.removeItem(this.id);
-    } else {
-      this.wishlistService.addItem({
-        id: this.id,
-        title: this.title,
-        author: this.author,
-        price: this.price,
+    const userId = localStorage.getItem('userId')!;
+    const existing = this.wishlistService
+      .getWishlistSnapshot()
+      .find((item) => item.bookId === this.id);
+
+    if (existing && existing.id) {
+      this.wishlistService.removeItem(existing.id).subscribe(() => {
+        this.snackBar.open('Removed from wishlist', 'Close', {
+          duration: 2000,
+        });
       });
-    }
-
-    // ✅ HTTP-ready (future)
-    /*
-    if (this.isInWishlist()) {
-      this.wishlistService.removeItem(this.id).subscribe();
     } else {
-      this.wishlistService.addItem({...}).subscribe();
+      this.wishlistService
+        .addItem({
+          userId,
+          bookId: this.id,
+        })
+        .subscribe(() => {
+          this.snackBar.open('Added to wishlist', 'Close', { duration: 2000 });
+        });
     }
-    */
   }
 
-  isInCart() {
-    return this.cartService.hasItem(this.id); // still works in mock
-    // HTTP version would use: return this.cartService.hasItemAsync(this.id)
+  isInCart(): boolean {
+    return this.cartService
+      .getCartItemsSnapshot()
+      .some((item) => item.bookId === this.id);
   }
 
-  isInWishlist() {
-    return this.wishlistService.hasItem(this.id);
-    // Or reactive: return this.wishlistService.wishlist$.pipe(map(...))
+  isInWishlist(): boolean {
+    return this.wishlistService.isInWishlist(this.id);
   }
 }

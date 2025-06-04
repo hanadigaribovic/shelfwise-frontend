@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
-import { WishlistItem, WishlistService } from '../../services/wishlist.service';
+import { WishlistDto, WishlistService } from '../../services/wishlist.service';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
@@ -11,9 +11,10 @@ import { CartService } from '../../services/cart.service';
   imports: [CommonModule, MatIconModule],
   templateUrl: './wishlist-page.component.html',
   styleUrl: './wishlist-page.component.css',
+  standalone: true,
 })
 export class WishlistComponent implements OnInit {
-  wishlist$!: Observable<WishlistItem[]>;
+  wishlist$!: Observable<WishlistDto[]>;
 
   constructor(
     private ws: WishlistService,
@@ -22,49 +23,48 @@ export class WishlistComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.wishlist$ = this.ws.getWishlist();
+    const userId = localStorage.getItem('userId');
+    if (!userId) return;
 
-    // ✅ Uncomment this if `getWishlist()` becomes non-subject-based HTTP:
-    // this.ws.getWishlist().subscribe(items => {
-    //   this.wishlist = items;
-    // });
+    this.wishlist$ = this.ws.getWishlist(userId);
   }
 
   remove(id: string) {
-    this.ws.removeItem(id);
-
-    // ✅ Future backend version (returns Observable):
-    // this.ws.removeItem(id).subscribe();
+    this.ws.removeItem(id).subscribe(() => {
+      const userId = localStorage.getItem('userId');
+      if (userId) {
+        this.wishlist$ = this.ws.getWishlist(userId); // Refresh
+      }
+    });
   }
 
   clear() {
-    this.ws.clear();
+    const userId = localStorage.getItem('userId');
+    if (!userId) return;
 
-    // ✅ Future backend version:
-    // this.ws.clear().subscribe();
+    this.ws.clear(userId).subscribe(() => {
+      this.wishlist$ = this.ws.getWishlist(userId); // Refresh
+    });
   }
 
   goToCart() {
     this.router.navigate(['/cart']);
   }
 
-  addToCart(item: WishlistItem) {
-    this.cs.addItem({
-      id: item.id,
-      title: item.title,
-      author: item.author,
-      quantity: 1,
-      price: item.price,
-    });
+  addToCart(item: WishlistDto) {
+    const userId = localStorage.getItem('userId');
+    if (!userId) return;
 
-    // ✅ Future backend version:
-    // this.cs.addItem({...}).subscribe();
+    this.cs
+      .addItem({
+        userId,
+        bookId: item.bookId,
+        quantity: 1,
+      })
+      .subscribe();
   }
 
-  isInCart(id: string): boolean {
-    return this.cs.hasItem(id);
-
-    // ✅ Optional server-side check in future:
-    // return false; // backend variant should be handled async
+  isInCart(bookId: string): boolean {
+    return this.cs.hasItem(bookId);
   }
 }

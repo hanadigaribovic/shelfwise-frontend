@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { map } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { CartService } from '../../../services/cart.service';
 import { WishlistService } from '../../../services/wishlist.service';
 import { MatIconModule } from '@angular/material/icon';
@@ -14,20 +14,23 @@ import { CommonModule } from '@angular/common';
   imports: [MatIconModule, RouterModule, CommonModule],
 })
 export class TopbarComponent implements OnInit {
-  cartCount$;
-  wishlistCount$;
+  cartCount$!: Observable<number>;
+  wishlistCount$!: Observable<number>;
 
   constructor(
     private cartService: CartService,
     private wishlistService: WishlistService
-  ) {
+  ) {}
+
+  ngOnInit(): void {
+    const userId = localStorage.getItem('userId')!; // sigurno postoji
+
     this.cartCount$ = this.cartService
-      .getCartItems()
+      .getCartItems(userId)
       .pipe(map((items) => items.length));
+
     this.wishlistCount$ = this.wishlistService
-      .getWishlist()
+      .getWishlist(userId)
       .pipe(map((items) => items.length));
   }
-
-  ngOnInit(): void {}
 }

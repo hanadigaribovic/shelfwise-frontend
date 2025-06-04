@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { Observable } from 'rxjs';
-import { CartItem, CartService } from '../../services/cart.service';
+import { CartDto, CartService } from '../../services/cart.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -10,15 +10,17 @@ import { Router } from '@angular/router';
   imports: [CommonModule, MatIconModule],
   templateUrl: './cart-page.component.html',
   styleUrl: './cart-page.component.css',
+  standalone: true,
 })
 export class CartPageComponent {
-  cartItems$!: Observable<CartItem[]>;
+  cartItems$!: Observable<CartDto[]>;
 
   constructor(private cartService: CartService, private router: Router) {}
 
   ngOnInit(): void {
     // ✅ MOCK:
-    this.cartItems$ = this.cartService.getCartItems();
+    //this.cartItems$ = this.cartService.getCartItems();
+    //OVDJE HALOOOOOOOOOOOOOOOO
   }
 
   increase(id: string) {
@@ -37,9 +39,9 @@ export class CartPageComponent {
     this.cartService.removeItem(id);
   }
 
-  clear() {
-    this.cartService.clearCart();
-  }
+  // clear() {
+  //   this.cartService.clearCart();
+  // }
 
   order() {
     this.router.navigate(['/new-order']);

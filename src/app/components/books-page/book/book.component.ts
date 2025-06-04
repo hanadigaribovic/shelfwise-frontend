@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { Observable } from 'rxjs';
 import { Book, BookService } from '../../../services/book.service';
@@ -9,63 +10,81 @@ import { WishlistService } from '../../../services/wishlist.service';
 
 @Component({
   selector: 'app-book',
-  imports: [CommonModule, MatIconModule, RouterModule],
+  standalone: true,
+  imports: [CommonModule, MatIconModule, RouterModule, MatSnackBarModule],
   templateUrl: './book.component.html',
   styleUrl: './book.component.css',
 })
 export class BookComponent {
-  book$!: Observable<Book | undefined>; // ✅ mock & HTTP both work here
+  book$!: Observable<Book | undefined>;
 
   constructor(
     private route: ActivatedRoute,
     private bookService: BookService,
     private cartService: CartService,
-    private wishlistService: WishlistService
+    private wishlistService: WishlistService,
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
     const bookId = this.route.snapshot.paramMap.get('id')!;
-    this.book$ = this.bookService.getBookById(bookId); // ✅ mock or backend
+    this.book$ = this.bookService.getBookById(bookId);
+
+    const userId = localStorage.getItem('userId')!;
+    this.wishlistService.getWishlist(userId).subscribe();
   }
 
   addToCart(book: Book) {
-    // ✅ MOCK
-    if (!this.cartService.hasItem(book.id)) {
-      this.cartService.addItem({ ...book, quantity: 1 });
-    }
-
-    // ✅ HTTP-ready version
-    /*
-    this.cartService.addItem({ ...book, quantity: 1 }).subscribe();
-    */
+    const userId = localStorage.getItem('userId')!;
+    this.cartService
+      .addItem({
+        userId,
+        bookId: book.id,
+        quantity: 1,
+      })
+      .subscribe(() => {
+        this.snackBar.open('Book added to cart!', 'Close', { duration: 2000 });
+      });
   }
 
   toggleWishlist(book: Book) {
-    // ✅ MOCK
-    if (this.wishlistService.hasItem(book.id)) {
-      this.wishlistService.removeItem(book.id);
-    } else {
-      this.wishlistService.addItem(book);
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+      this.snackBar.open('You must be logged in to manage wishlist.', 'Close', {
+        duration: 2000,
+      });
+      return;
     }
 
-    // ✅ HTTP-ready version
-    /*
-    if (this.isInWishlist(book.id)) {
-      this.wishlistService.removeItem(book.id).subscribe();
+    const existing = this.wishlistService
+      .getWishlistSnapshot()
+      .find((item) => item.bookId === book.id);
+
+    if (existing) {
+      this.wishlistService.removeItem(existing.id!).subscribe(() => {
+        this.snackBar.open('Removed from wishlist', 'Close', {
+          duration: 2000,
+        });
+      });
     } else {
-      this.wishlistService.addItem(book).subscribe();
+      const dto = {
+        userId,
+        bookId: book.id,
+        title: book.title,
+        author: book.author,
+      };
+
+      this.wishlistService.addItem(dto).subscribe(() => {
+        this.snackBar.open('Added to wishlist', 'Close', { duration: 2000 });
+      });
     }
-    */
   }
 
-  isInCart(id: string) {
+  isInWishlist(bookId: string): boolean {
+    return this.wishlistService.isInWishlist(bookId);
+  }
+
+  isInCart(id: string): boolean {
     return this.cartService.hasItem(id);
-
-    // ✅ HTTP-ready version:
-    // return this.cartService.cartItems$.pipe(map(items => items.some(i => i.id === id)));
-  }
-
-  isInWishlist(id: string) {
-    return this.wishlistService.hasItem(id);
   }
 }

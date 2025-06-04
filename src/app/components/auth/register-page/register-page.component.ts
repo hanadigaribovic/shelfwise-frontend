@@ -20,6 +20,7 @@ export class RegisterPageComponent {
   form: FormGroup;
   showPassword = false;
   showConfirmPassword = false;
+  errorMessage: string | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -47,10 +48,23 @@ export class RegisterPageComponent {
   onSubmit() {
     if (this.form.valid) {
       const { email, password } = this.form.value;
+      this.errorMessage = null;
 
       this.authService.register({ email, password }).subscribe({
-        next: () => this.router.navigate(['/books']),
-        error: (err) => console.error('Registration error:', err),
+        next: (res) => {
+          localStorage.setItem('token', res.token);
+          localStorage.setItem('userId', res.uid);
+          this.router.navigate(['/books']);
+        },
+        error: (err) => {
+          if (err.error && typeof err.error === 'string') {
+            this.errorMessage = err.error;
+          } else if (err.error?.message) {
+            this.errorMessage = err.error.message;
+          } else {
+            this.errorMessage = 'Registration failed. Please try again.';
+          }
+        },
       });
     }
   }
