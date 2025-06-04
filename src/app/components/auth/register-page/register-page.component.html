@@ -7,7 +7,8 @@
     <h1>Create Your <strong>ShelfWise</strong> Account</h1>
     <p>Join our community of passionate readers and start exploring thousands of books tailored to your interests.</p>
     <br>
-    <p>With your free ShelfWise account, you can build your wishlist, manage your bookshelf, and track your orders with ease.</p>
+    <p>With your free ShelfWise account, you can build your wishlist, manage your bookshelf, and track your orders with
+      ease.</p>
     <div class="spacer"></div>
 
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
@@ -16,7 +17,7 @@
 
       <label>Password</label>
       <div class="input-group">
-        <input [type]="passwordInputType" formControlName="password" placeholder="*******"/>
+        <input [type]="passwordInputType" formControlName="password" placeholder="*******" />
         <button type="button" class="toggle-btn" (click)="showPassword = !showPassword">
           {{ showPassword ? 'Hide' : 'Show' }}
         </button>
@@ -24,15 +25,20 @@
 
       <label>Confirm Password</label>
       <div class="input-group">
-        <input [type]="confirmPasswordInputType" formControlName="confirmPassword" placeholder="********"/>
+        <input [type]="confirmPasswordInputType" formControlName="confirmPassword" placeholder="********" />
         <button type="button" class="toggle-btn" (click)="showConfirmPassword = !showConfirmPassword">
           {{ showConfirmPassword ? 'Hide' : 'Show' }}
         </button>
       </div>
 
       <div class="no-match" *ngIf="form.errors?.['passwordsMismatch'] && form.get('confirmPassword')?.touched">
-           Passwords do not match.
+        Passwords do not match.
       </div>
+
+      <div class="no-match" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+
 
       <button type="submit" [disabled]="form.invalid">Register</button>
     </form>

@@ -2,7 +2,6 @@
 
 <ng-container *ngIf="(wishlist$ | async) as wishlist">
   <div *ngIf="wishlist.length === 0" class="empty-cart">
-    <mat-icon>favorite_border</mat-icon>
     <p>Your wishlist is currently empty.</p>
   </div>
 

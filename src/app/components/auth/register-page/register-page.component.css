@@ -32,7 +32,6 @@ h1 {
   font-weight: normal;
 }
 
-
 h1 strong {
   font-weight: bold;
 }
@@ -107,7 +106,7 @@ button {
   margin: 0;
 }
 
-.no-match{
+.no-match {
   color: red;
   font-size: 1rem;
 }
