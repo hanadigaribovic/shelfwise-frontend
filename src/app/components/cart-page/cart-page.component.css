@@ -85,3 +85,17 @@ h2 {
   display: block;
   margin-bottom: 0.5rem;
 }
+
+.cart-total {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 0;
+  font-size: 1.1rem;
+}
+
+.total-price {
+  color: #4a4a2c;
+  font-weight: 600;
+}

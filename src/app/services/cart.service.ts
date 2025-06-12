@@ -1,9 +1,12 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of } from 'rxjs';
-// import { HttpClient } from '@angular/common/http'; // ✅ Uncomment when backend is ready
+import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface CartItem {
-  id: string;
+  cartId?: string;
+  userId: string;
+  bookId: string;
   title: string;
   author: string;
   quantity: number;
@@ -12,85 +15,98 @@ export interface CartItem {
 
 @Injectable({ providedIn: 'root' })
 export class CartService {
-  private cartItemsSubject = new BehaviorSubject<CartItem[]>([
-    {
-      id: '1',
-      title: 'Story about John Doe',
-      author: 'John Doe',
-      quantity: 1,
-      price: 12.0,
-    },
-    {
-      id: '2',
-      title: 'Story about John Doe',
-      author: 'John Doe',
-      quantity: 1,
-      price: 12.0,
-    },
-    {
-      id: '3',
-      title: 'Story about John Doe',
-      author: 'John Doe',
-      quantity: 1,
-      price: 12.0,
-    },
-  ]);
+  private API_URL = `${environment.apiUrl}/cart`;
+  private cartItemsSubject = new BehaviorSubject<CartItem[]>([]);
 
-  // constructor(private http: HttpClient) {} // ✅ Use this when backend is ready
-  constructor() {} // 👈 mock version
+  constructor(private http: HttpClient) {}
+
+  getCart(userId: string): void {
+    this.http.get<CartItem[]>(`${this.API_URL}/${userId}`).subscribe({
+      next: (items) => {
+        this.cartItemsSubject.next(items);
+      },
+      error: (error) => {
+        console.error('Error fetching cart:', error);
+        this.cartItemsSubject.next([]); // Reset cart state on error
+      },
+    });
+  }
 
   getCartItems(): Observable<CartItem[]> {
     return this.cartItemsSubject.asObservable();
-
-    // ✅ Future backend call
-    // return this.http.get<CartItem[]>('/api/cart');
   }
 
-  addItem(item: CartItem) {
-    const existing = this.cartItemsSubject.value.find((i) => i.id === item.id);
-    if (!existing) {
-      this.cartItemsSubject.next([...this.cartItemsSubject.value, item]);
+  addItem(item: {
+    userId: string;
+    bookId: string;
+    title: string;
+    author: string;
+    price: number;
+    quantity: number;
+  }) {
+    this.http.post<void>(this.API_URL, item).subscribe(() => {
+      this.getCart(item.userId);
+    });
+  }
+
+  updateQuantity(cartItemId: string, delta: number, userId: string): void {
+    console.log(cartItemId, delta, userId);
+    console.log('RADIS LI RADIS LI');
+    this.http
+      .patch<void>(`${this.API_URL}/${cartItemId}`, delta)
+      .subscribe(() => {
+        this.getCart(userId);
+      });
+  }
+
+  removeItem(cartItemId: string, userId: string): void {
+    this.http.delete<void>(`${this.API_URL}/${cartItemId}`).subscribe(() => {
+      this.getCart(userId);
+    });
+  }
+
+  clearCart(userId: string): Observable<void> {
+    const snapshot = this.cartItemsSubject.value;
+    if (snapshot.length === 0) {
+      this.cartItemsSubject.next([]);
+      return new Observable<void>((observer) => {
+        observer.next();
+        observer.complete();
+      });
     }
 
-    // ✅ Future backend call
-    // return this.http.post<void>('/api/cart', item);
+    const deleteObservables = snapshot
+      .filter((item) => item.cartId)
+      .map((item) => this.http.delete<void>(`${this.API_URL}/${item.cartId}`));
+
+    return new Observable<void>((observer) => {
+      if (deleteObservables.length === 0) {
+        this.cartItemsSubject.next([]);
+        observer.next();
+        observer.complete();
+        return;
+      }
+
+      // Use forkJoin to wait for all delete operations to complete
+      import('rxjs').then(({ forkJoin }) => {
+        forkJoin(deleteObservables).subscribe({
+          next: () => {
+            this.cartItemsSubject.next([]);
+            this.getCart(userId);
+            observer.next();
+            observer.complete();
+          },
+          error: (error) => observer.error(error),
+        });
+      });
+    });
   }
 
-  removeItem(id: string): void {
-    const items = this.cartItemsSubject.value.filter((item) => item.id !== id);
-    this.cartItemsSubject.next(items);
-
-    // ✅ Future backend call
-    // return this.http.delete<void>(`/api/cart/${id}`);
+  hasItem(bookId: string): boolean {
+    return this.cartItemsSubject.value.some((item) => item.bookId === bookId);
   }
 
-  updateQuantity(id: string, delta: number): void {
-    const items = this.cartItemsSubject.value.map((item) =>
-      item.id === id
-        ? { ...item, quantity: Math.max(item.quantity + delta, 1) }
-        : item
-    );
-    this.cartItemsSubject.next(items);
-
-    // ✅ Future backend call
-    // return this.http.patch<void>(`/api/cart/${id}`, { delta });
-  }
-
-  clearCart(): void {
-    this.cartItemsSubject.next([]);
-
-    // ✅ Future backend call
-    // return this.http.delete<void>('/api/cart');
-  }
-
-  hasItem(id: string): boolean {
-    return this.cartItemsSubject.value.some((item) => item.id === id);
-
-    // ✅ If server-side cart logic is added, replace this:
-    // return this.getCartItems().pipe(map(items => items.some(i => i.id === id)));
-  }
-
-  getCartItemsSnapshot(): CartItem[] {
+  getSnapshot(): CartItem[] {
     return this.cartItemsSubject.value;
   }
 }
