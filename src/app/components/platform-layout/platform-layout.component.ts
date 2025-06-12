@@ -57,8 +57,13 @@ export class PlatformLayoutComponent {
     else if (this.currentSection === 'cart') this.router.navigate(['/books']);
     else if (this.currentSection === 'wishlist')
       this.router.navigate(['/books']);
-    else if (this.currentSection === 'order') this.router.navigate(['/cart']);
-    else if (this.currentSection === 'new-order')
+    else if (this.currentSection === 'order') {
+      if (this.currentUrl.includes('new-order')) {
+        this.router.navigate(['/my-orders']);
+      } else {
+        this.router.navigate(['/cart']);
+      }
+    } else if (this.currentSection === 'new-order')
       this.router.navigate(['/my-orders']);
   }
 }

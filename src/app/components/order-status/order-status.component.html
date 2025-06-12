@@ -3,23 +3,30 @@
 <h2>Order #{{ orderId }} status</h2>
 
 <div class="status-bar">
-  <span class="status-chip">{{ order?.status }}</span>
+  <span class="status-chip">{{ (order$ | async)?.status }}</span>
 </div>
 
-<div class="delivery-note">
-  Only {{ order?.daysLeft }} days left
-  <span class="est">(Estimated delivery: {{ order?.eta }})</span>
+<div class="order-date" *ngIf="(order$ | async)?.orderDate">
+  Order placed: {{ (order$ | async)?.orderDate || "" | date : "medium" }}
 </div>
 
-<div *ngFor="let item of order?.items" class="order-item">
-  <div>{{ item.quantity }}x {{ item.title }}</div>
-  <div>${{ item.price.toFixed(2) }}</div>
+<div class="delivery-note" *ngIf="(order$ | async)?.daysLeft !== undefined">
+  <ng-container *ngIf="((order$ | async)?.daysLeft || 0) > 0">
+    Only {{ (order$ | async)?.daysLeft }} days left
+    <span class="est" *ngIf="(order$ | async)?.eta">(Estimated delivery:
+      {{ (order$ | async)?.eta | date : "mediumDate" }})</span>
+  </ng-container>
+  <ng-container *ngIf="((order$ | async)?.daysLeft || 0) === 0">
+    Delivery today!
+  </ng-container>
 </div>
 
-<div class="total-price">
-  <strong>Price to Pay:</strong> ${{ order?.total }}
+<div class="total-price" *ngIf="(order$ | async)?.totalPrice !== undefined">
+  <strong>Price to Pay:</strong> ${{
+  ((order$ | async)?.totalPrice || 0).toFixed(2)
+  }}
 </div>
 
-<div class="pay-footer" *ngIf="fromCart && order?.status !== 'COMPLETED'">
+<div class="pay-footer" *ngIf="fromCart && (order$ | async)?.status !== 'COMPLETED'">
   <button (click)="pay()">Order Now</button>
 </div>

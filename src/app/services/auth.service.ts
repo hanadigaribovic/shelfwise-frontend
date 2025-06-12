@@ -22,24 +22,30 @@ export class AuthService {
   }): Observable<AuthResponse> {
     return this.http
       .post<AuthResponse>(`${this.API_URL}/register`, data)
-      .pipe(tap((res) => this.saveToken(res.token)));
+      .pipe(tap((res) => this.saveToken(res.token, res.uid)));
   }
 
   login(data: { email: string; password: string }): Observable<AuthResponse> {
     return this.http
       .post<AuthResponse>(`${this.API_URL}/login`, data)
-      .pipe(tap((res) => this.saveToken(res.token)));
+      .pipe(tap((res) => this.saveToken(res.token, res.uid)));
   }
 
-  private saveToken(token: string): void {
+  private saveToken(token: string, uid: string): void {
     localStorage.setItem('token', token);
+    localStorage.setItem('uid', uid);
   }
 
   getToken(): string | null {
     return localStorage.getItem('token');
   }
 
+  getUserId(): string | null {
+    return localStorage.getItem('uid');
+  }
+
   logout(): void {
     localStorage.removeItem('token');
+    localStorage.removeItem('uid');
   }
 }

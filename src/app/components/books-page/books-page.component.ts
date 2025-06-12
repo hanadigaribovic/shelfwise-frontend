@@ -21,6 +21,8 @@ interface Book {
 })
 export class BooksPageComponent implements OnInit {
   books$: Observable<Book[]> = of([]);
+  private authService: any;
+  private cartService: any;
 
   constructor(private bs: BookService) {}
 

@@ -4,7 +4,8 @@ import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { Order, OrderService } from '../../services/order.service';
 import { CartService } from '../../services/cart.service';
-// import { Observable } from 'rxjs'; // ✅ Uncomment if you use observables for order
+import { AuthService } from '../../services/auth.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-order-status',
@@ -15,51 +16,60 @@ import { CartService } from '../../services/cart.service';
 })
 export class OrderStatusComponent implements OnInit {
   orderId!: string;
-  order!: Order | undefined; // ✅ mock-based
-  // order$!: Observable<Order>; // ✅ backend-compatible version
-
+  order$!: Observable<Order>;
   fromCart = false;
+  userId!: string;
 
   constructor(
     private route: ActivatedRoute,
     private orderService: OrderService,
     private cartService: CartService,
+    private authService: AuthService,
     private router: Router
   ) {}
 
   ngOnInit(): void {
     this.orderId = this.route.snapshot.paramMap.get('id')!;
 
-    // ✅ MOCK:
-    this.order = this.orderService.getOrderById(this.orderId);
+    const userIdFromStorage = this.authService.getUserId();
+    if (userIdFromStorage) {
+      this.userId = userIdFromStorage;
+    } else {
+      this.router.navigate(['/login']);
+      return;
+    }
 
-    // ✅ HTTP (future):
-    // this.order$ = this.orderService.getOrderById(this.orderId);
-
+    this.order$ = this.orderService.getOrderById(this.orderId);
     const state = history.state;
-    this.fromCart = !!state.fromCart;
+    this.fromCart = state?.fromCart === true;
+
+    // If we're not coming from cart, redirect to my orders
+    if (!this.fromCart) {
+      this.router.navigate(['/my-orders']);
+    }
   }
 
   back() {
-    history.back();
+    if (this.fromCart) {
+      this.router.navigate(['/cart']);
+    } else {
+      this.router.navigate(['/my-orders']);
+    }
   }
 
   pay() {
-    if (!this.order) return;
+    this.order$.subscribe((order) => {
+      if (order.status === 'COMPLETED') return;
 
-    if (this.order.status === 'COMPLETED') return;
-
-    alert('Payment processed.');
-    this.cartService.clearCart();
-
-    // ✅ mock:
-    this.order.status = 'COMPLETED';
-
-    // ✅ backend (future):
-    // this.orderService.markAsPaid(this.order.id).subscribe(() => {
-    //   this.router.navigate(['/my-orders']);
-    // });
-
-    this.router.navigate(['/my-orders']);
+      alert('Payment processed.');
+      this.cartService.clearCart(this.userId).subscribe(() => {
+        this.orderService
+          .updateOrderStatus(this.orderId, 'DELIVERED')
+          .subscribe(() => {
+            this.fromCart = false;
+            this.router.navigate(['/my-orders']);
+          });
+      });
+    });
   }
 }
